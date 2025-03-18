@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Amigo Secreto Elegante</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            background: linear-gradient(to right, #1c1c1c, #3a3a3a);
+            color: #fff;
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+        .container {
+            background: #222;
+            border-radius: 15px;
+            box-shadow: 0 4px 10px rgba(255, 215, 0, 0.5);
+            padding: 20px;
+            width: 350px;
+            margin: auto;
+            margin-top: 50px;
+        }
+        .titulo {
+            color: #ffd700;
+        }
+        .boton-sortear, #btnAgregar, #btnReiniciar {
+            background-color: #ffd700;
+            color: black;
+            border: none;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: transform 0.2s;
+        }
+        .boton-sortear:hover, #btnAgregar:hover, #btnReiniciar:hover {
+            background-color: #e6c200;
+            transform: scale(1.1);
+        }
+        .resultado {
+            font-size: 18px;
+            margin-top: 20px;
+            font-weight: bold;
+            color: #ffd700;
+        }
+        .animacion-sorteo {
+            animation: parpadeo 0.1s infinite alternate;
+        }
+        @keyframes parpadeo {
+            from { opacity: 1; }
+            to { opacity: 0.3; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="titulo">Amigo Secreto</h1>
+        <p class="instruccion">Ingresa los nombres y haz el sorteo</p>
+        
+        <div class="entrada">
+            <input type="text" id="nombreInput" placeholder="Escribe un nombre">
+            <button id="btnAgregar">Añadir</button>
+        </div>
+        
+        <ul id="listaNombres"></ul>
+        
+        <button id="btnSortear" class="boton-sortear">Sortear Amigo Secreto</button>
+        <button id="btnReiniciar">Reiniciar</button>
+        
+        <div id="resultadoSorteo" class="resultado"></div>
+    </div>
+    
+    <audio id="sonidoSorteo">
+        <source src="https://www.soundjay.com/button/beep-07.wav" type="audio/wav">
+        Tu navegador no soporta el elemento de audio.
+    </audio>
+    
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const inputNombre = document.getElementById("nombreInput");
+            const btnAgregar = document.getElementById("btnAgregar");
+            const listaNombres = document.getElementById("listaNombres");
+            const btnSortear = document.getElementById("btnSortear");
+            const btnReiniciar = document.getElementById("btnReiniciar");
+            const resultadoSorteo = document.getElementById("resultadoSorteo");
+            const sonidoSorteo = document.getElementById("sonidoSorteo");
+            
+            let nombres = [];
+
+            btnAgregar.addEventListener("click", () => {
+                const nombre = inputNombre.value.trim();
+                if (nombre !== "" && !nombres.includes(nombre)) {
+                    nombres.push(nombre);
+                    actualizarLista();
+                    inputNombre.value = "";
+                    inputNombre.focus();
+                } else if (nombres.includes(nombre)) {
+                    alert("Ese nombre ya está en la lista.");
+                }
+            });
+
+            function actualizarLista() {
+                listaNombres.innerHTML = "";
+                nombres.forEach((nombre, index) => {
+                    const li = document.createElement("li");
+                    li.textContent = `${index + 1}. ${nombre}`;
+                    listaNombres.appendChild(li);
+                });
+            }
+
+            btnSortear.addEventListener("click", () => {
+                if (nombres.length < 2) {
+                    resultadoSorteo.textContent = "Debe haber al menos dos participantes";
+                    return;
+                }
+                resultadoSorteo.classList.add("animacion-sorteo");
+                
+                // Intentamos reproducir el sonido y manejamos errores
+                sonidoSorteo.play().catch(error => console.error("Error al reproducir el sonido:", error));
+
+                let contador = 0;
+                let intervalo = setInterval(() => {
+                    let randomNombre = nombres[Math.floor(Math.random() * nombres.length)];
+                    resultadoSorteo.innerHTML = `<strong>El Amigo Secreto Sorteado es:</strong> ${randomNombre}`;
+                    contador++;
+                    if (contador > 10) {
+                        clearInterval(intervalo);
+                        resultadoSorteo.classList.remove("animacion-sorteo");
+                    }
+                }, 100);
+            });
+            
+            btnReiniciar.addEventListener("click", () => {
+                nombres = [];
+                actualizarLista();
+                resultadoSorteo.innerHTML = "";
+            });
+        });
+    </script>
+</body>
+</html>
+
+
+
+
